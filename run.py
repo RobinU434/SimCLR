@@ -74,10 +74,18 @@ def main():
 
     model = ResNetSimCLR(base_model=args.arch, out_dim=args.out_dim)
 
-    optimizer = torch.optim.Adam(model.parameters(), args.lr, weight_decay=args.weight_decay)
+    optimizer = torch.optim.Adam(
+        model.parameters(), args.lr, weight_decay=args.weight_decay
+    )
 
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=len(train_loader), eta_min=0,
-                                                           last_epoch=-1)
+    warmup_epochs = 10
+    warmup_scheduler = torch.optim.lr_scheduler.LinearLR(optimizer, start_factor=0.01)
+    cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer, T_max=len(train_loader) - warmup_epochs, eta_min=0, last_epoch=-1
+    )
+    scheduler = torch.optim.lr_scheduler.SequentialLR(
+        optimizer, [warmup_scheduler, cosine_scheduler], milestones=[warmup_epochs]
+    )
 
     #  It’s a no-op if the 'gpu_index' argument is a negative integer or None.
     with torch.cuda.device(args.gpu_index):
