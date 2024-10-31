@@ -12,6 +12,8 @@ torch = "^2.5.1"
 torchvision = "^0.20.1"
 matplotlib = "^3.9.2"
 requests = "^2.32.3"
+lightning = "^2.4.0"
+tensorboard = "^2.18.0"
 
 
 [build-system]
