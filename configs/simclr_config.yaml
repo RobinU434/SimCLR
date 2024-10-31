@@ -1,0 +1,38 @@
+ResNetEncoder:
+  base_model_name: resnet18
+  pretrained: True
+
+projection_head_enabled: True
+
+ProjectionHead:
+  hidden_dim: 512
+  output_dim: 32
+  activation_func: ReLU
+
+optimizer_name: SGD
+optimizer_params:
+  lr: 1e-4
+
+NTCrossEntropy:
+  tau: 1
+  normalize: True
+
+
+train_dataset:
+  name: CIFAR10
+  root: "./data"
+
+val_dataset:
+  name: CIFAR10
+  root: "./data"
+
+max_epochs: 100
+warmup_epochs: 10
+val_check_interval: 5
+precision: 32  # 16, 32, 64
+batch_size: 128
+
+device: "cuda:0"
+num_worker: 6
+
+
