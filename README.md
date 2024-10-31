@@ -1,47 +1,61 @@
-# PyTorch SimCLR: A Simple Framework for Contrastive Learning of Visual Representations
-[![DOI](https://zenodo.org/badge/241184407.svg)](https://zenodo.org/badge/latestdoi/241184407)
+# SimCLR Lightning
 
+## Overview
 
-### Blog post with full documentation: [Exploring SimCLR: A Simple Framework for Contrastive Learning of Visual Representations](https://sthalles.github.io/simple-self-supervised-learning/)
-
-![Image of SimCLR Arch](https://sthalles.github.io/assets/contrastive-self-supervised/cover.png)
-
-### See also [PyTorch Implementation for BYOL - Bootstrap Your Own Latent: A New Approach to Self-Supervised Learning](https://github.com/sthalles/PyTorch-BYOL).
+This repository provides a PyTorch Lightning implementation of the SimCLR (Self-Supervised Contrastive Learning) framework for self-supervised learning of visual representations. SimCLR learns representations by contrasting positive pairs of augmented views of the same data example against negative pairs of different examples.
 
 ## Installation
 
-```
-$ conda env create --name simclr --file env.yml
-$ conda activate simclr
-$ python run.py
-```
+1. **Clone the repository:**
+   
+   ```bash
+   git clone https://github.com/RobinU434/SimCLR.git
+   ```
 
-## Config file
+2. **Create a virtual environment:**
+   
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
 
-Before running SimCLR, make sure you choose the correct running configurations. You can change the running configurations by passing keyword arguments to the ```run.py``` file.
+3. **Install dependencies:** We depend on poetry for python package management. 
+   
+   ```bash
+   poetry install --no-root
+   ```
 
-```python
+## Training
 
-$ python run.py -data ./datasets --dataset-name stl10 --log-every-n-steps 100 --epochs 100 
+1. **Model Configuration:**
+   Configure the SimCLR model, including the base encoder (e.g., ResNet), projection head, and other hyperparameters in the [config file](./configs/simclr_config.yaml). You can also make a copy of this config file and specify the path to your config file in the CLI.  
+   If you would like to develop further features please make sure your altered config file is mirrored in [code](./simclr/utils/config.py). If you don't like to do this manually please checkout [Config2Class](https://github.com/RobinU434/Config2Class). 
 
-```
+2. **Training Script:**
+   Run the training script:
+   ```bash
+   python -m simclr train --config-path <your-custom-config-path>  --save-path <directory-for-checkpoints-or-similar>
+   ```
+   Please note that the command-line arguments are optional.
 
-If you want to run it on CPU (for debugging purposes) use the ```--disable-cuda``` option.
 
-For 16-bit precision GPU training, there **NO** need to to install [NVIDIA apex](https://github.com/NVIDIA/apex). Just use the ```--fp16_precision``` flag and this implementation will use [Pytorch built in AMP training](https://pytorch.org/docs/stable/notes/amp_examples.html).
+**Contributions**
 
-## Feature Evaluation
+We welcome contributions to this repository. Feel free to submit pull requests or issues.
 
-Feature evaluation is done using a linear model protocol. 
+**License**
 
-First, we learned features using SimCLR on the ```STL10 unsupervised``` set. Then, we train a linear classifier on top of the frozen features from SimCLR. The linear model is trained on features extracted from the ```STL10 train``` set and evaluated on the ```STL10 test``` set. 
+This project is licensed under the MIT License.
 
-Check the [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://github.com/sthalles/SimCLR/blob/simclr-refactor/feature_eval/mini_batch_logistic_regression_evaluator.ipynb) notebook for reproducibility.
+**Acknowledgements**
 
-Note that SimCLR benefits from **longer training**.
+We would like to thank the PyTorch Lightning team for providing a flexible and efficient framework for deep learning.
 
-| Linear Classification      | Dataset | Feature Extractor | Architecture                                                                    | Feature dimensionality | Projection Head dimensionality | Epochs | Top1 % |
-|----------------------------|---------|-------------------|---------------------------------------------------------------------------------|------------------------|--------------------------------|--------|--------|
-| Logistic Regression (Adam) | STL10   | SimCLR            | [ResNet-18](https://drive.google.com/open?id=14_nH2FkyKbt61cieQDiSbBVNP8-gtwgF) | 512                    | 128                            | 100    | 74.45  |
-| Logistic Regression (Adam) | CIFAR10 | SimCLR            | [ResNet-18](https://drive.google.com/open?id=1lc2aoVtrAetGn0PnTkOyFzPCIucOJq7C) | 512                    | 128                            | 100    | 69.82  |
-| Logistic Regression (Adam) | STL10   | SimCLR            | [ResNet-50](https://drive.google.com/open?id=1ByTKAUsdm_X7tLcii6oAEl5qFRqRMZSu) | 2048                   | 128                            | 50     | 70.075 |
+**Beyond the Basics: Advanced Topics**
+
+* [Solo-Learn](https://github.com/vturrisi/solo-learn): Explore the concept of solo-learning, a more efficient variant of SimCLR that uses a single network to learn representations.
+* [MoCo](https://github.com/facebookresearch/moco): Implement the Momentum Contrast (MoCo) method, which uses a momentum encoder to stabilize training.
+* [BYOL](https://github.com/google-deepmind/deepmind-research/tree/master/byol): Experiment with the Bootstrap Your Own Latent (BYOL) method, which leverages a target network to improve training stability.
+* [SwAV](https://github.com/facebookresearch/swav): Implement the SwAV (Swapping Assignment) method, which uses clustering assignments to learn representations.
+
+By diving into these advanced techniques, you can further enhance the performance and versatility of your SimCLR implementation.
